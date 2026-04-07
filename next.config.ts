@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
   images: {
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "placedog.net" },
       { protocol: "https", hostname: "placekitten.com" },
