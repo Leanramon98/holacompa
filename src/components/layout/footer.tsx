@@ -1,74 +1,131 @@
 import Link from "next/link";
-import { Facebook, Instagram, Mail, Send, Share2 } from "lucide-react";
+import { PawPrint, Instagram, Twitter, MessageCircle, Heart, Store, Compass, LayoutGrid } from "lucide-react";
+
+const footerLinks = {
+  explorar: [
+    { label: "Mascotas", href: "/descubrir" },
+    { label: "Refugios", href: "/refugios" },
+    { label: "Marketplace", href: "/marketplace" },
+    { label: "Cómo funciona", href: "/#como-funciona" },
+  ],
+  comunidad: [
+    { label: "Sobre nosotros", href: "/acerca" },
+    { label: "Testimonios", href: "/blog" },
+    { label: "Alianzas", href: "/contacto" },
+    { label: "Ayuda", href: "/faq" },
+  ],
+  legal: [
+    { label: "Privacidad", href: "/privacidad" },
+    { label: "Términos", href: "/terminos" },
+    { label: "Seguridad", href: "/seguridad" },
+  ],
+};
 
 export function Footer() {
   return (
-    <footer className="bg-surface-container-low py-16 px-4 md:px-8 mt-20 border-t border-outline-variant/10">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-        <div className="space-y-6">
-          <div className="text-2xl font-bold text-primary tracking-tighter">Hola Compa</div>
-          <p className="text-sm text-on-surface-variant leading-relaxed opacity-80">
-            Conectando mascotas con sus humanos definitivos mediante tecnología y empatía. La estancia digital de mascotas líder en Argentina.
+    <footer className="relative bg-on-surface text-background mt-40">
+      {/* Editorial Slogan Curve */}
+      <div className="absolute top-0 left-0 right-0 h-40 bg-background organic-clip -translate-y-full pointer-events-none" />
+      
+      <div className="container mx-auto px-6 py-24 md:py-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 md:gap-24">
+          
+          {/* Brand Info */}
+          <div className="lg:col-span-4 space-y-10">
+            <Link href="/" className="inline-block group">
+              <span className="text-4xl font-black text-primary font-plus-jakarta tracking-tighter group-hover:scale-105 transition-transform inline-block">
+                Hola Compa
+              </span>
+            </Link>
+            <p className="text-background/60 text-lg md:text-xl font-medium leading-relaxed max-w-sm">
+              La estancia digital donde cada "Compa" encuentra su lugar en el mundo. Curación premium de adopciones seguras.
+            </p>
+            <div className="flex gap-6">
+              {[Instagram, Twitter, MessageCircle].map((Icon, i) => (
+                <Link key={i} href="#" className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary transition-all hover:scale-110 active:scale-95 shadow-xl">
+                  <Icon className="h-6 w-6 text-white" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Links Grid */}
+          <div className="lg:col-span-5 grid grid-cols-2 md:grid-cols-3 gap-12">
+            {[
+              { title: "Explorar", links: footerLinks.explorar },
+              { title: "Comunidad", links: footerLinks.comunidad },
+              { title: "Legal", links: footerLinks.legal },
+            ].map((section) => (
+              <div key={section.title} className="space-y-8">
+                <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white opacity-40">{section.title}</h4>
+                <ul className="space-y-6">
+                  {section.links.map((link) => (
+                    <li key={link.label}>
+                      <Link href={link.href} className="text-lg font-black tracking-tight text-white/70 hover:text-primary transition-colors hover:translate-x-1 inline-block">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Newsletter / CTA Small */}
+          <div className="lg:col-span-3 space-y-10">
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white opacity-40">Newsletter Premium</h4>
+            <div className="space-y-6">
+              <p className="text-background/60 text-sm font-black uppercase tracking-widest leading-loose">
+                Anuncios exclusivos, guías de cuidado y mucho más.
+              </p>
+              <div className="relative group">
+                <input 
+                  type="email" 
+                  placeholder="Tu email..." 
+                  className="w-full h-16 bg-white/5 border border-white/10 rounded-full px-6 text-white placeholder:text-white/20 focus:ring-2 focus:ring-primary focus:outline-none transition-all text-lg"
+                />
+                <button className="absolute right-2 top-2 h-12 w-12 rounded-full bg-primary flex items-center justify-center text-white hover:scale-105 active:scale-95 shadow-lg">
+                  <ArrowRight className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Credits */}
+        <div className="mt-32 pt-16 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left">
+          <p className="text-sm font-black uppercase tracking-[0.1em] text-white/40">
+            © 2024 Hola Compa — Diseñado con amor por los animales 🐾
+          </p>
+          <p className="text-sm font-black uppercase tracking-[0.1em] text-primary/60 italic font-serif">
+            Una Experiencia PetCurator
           </p>
         </div>
-        
-        <div>
-          <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-secondary mb-8">Navegación</h4>
-          <ul className="space-y-4 text-sm font-medium">
-            <li><Link href="/guia-adoptante" className="text-on-surface-variant hover:text-primary transition-colors">Guía del Adoptante</Link></li>
-            <li><Link href="/sumar-refugio" className="text-on-surface-variant hover:text-primary transition-colors">Sumar mi Refugio</Link></li>
-            <li><Link href="/comunidad" className="text-on-surface-variant hover:text-primary transition-colors">Blog de Crianza</Link></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-secondary mb-8">Legal</h4>
-          <ul className="space-y-4 text-sm font-medium">
-            <li><Link href="/terminos" className="text-on-surface-variant hover:text-primary transition-colors">Términos AFIP</Link></li>
-            <li><Link href="/privacidad" className="text-on-surface-variant hover:text-primary transition-colors">Políticas de Privacidad</Link></li>
-            <li><Link href="/cookies" className="text-on-surface-variant hover:text-primary transition-colors">Uso de Cookies</Link></li>
-          </ul>
-        </div>
-
-        <div className="space-y-8">
-          <div>
-            <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-secondary mb-8">Newsletter</h4>
-            <div className="flex gap-2">
-              <input 
-                type="email" 
-                placeholder="Tu email" 
-                className="bg-white border-none rounded-xl text-sm flex-1 px-4 h-12 focus:ring-2 focus:ring-primary/20"
-              />
-              <button className="bg-primary text-white p-3 rounded-xl hover:opacity-90 transition-opacity">
-                <Send className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-          <div>
-            <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-secondary mb-6">Seguinos</h4>
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-primary hover:text-white transition-all cursor-pointer border border-outline-variant/10">
-                <Instagram className="w-4 h-4" />
-              </div>
-              <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-primary hover:text-white transition-all cursor-pointer border border-outline-variant/10">
-                <Facebook className="w-4 h-4" />
-              </div>
-              <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-primary hover:text-white transition-all cursor-pointer border border-outline-variant/10">
-                <Mail className="w-4 h-4" />
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-40 text-center md:text-left">
-          © 2024 Hola Compa - La Estancia Digital de Mascotas. CUIT: 30-XXXXXXXX-X
-        </p>
-        <div className="flex gap-6 opacity-40">
-           <Share2 className="w-4 h-4" />
-        </div>
-      </div>
+      {/* Organic Shapes Background Decor */}
+      <div className="absolute top-1/2 left-[5%] w-96 h-96 bg-primary/20 rounded-full blur-[160px] opacity-20 -z-10" />
+      <div className="absolute bottom-0 right-[5%] w-80 h-80 bg-secondary/20 rounded-full blur-[140px] opacity-10 -z-10" />
     </footer>
+  );
+}
+
+function ArrowRight(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
   );
 }

@@ -1,22 +1,35 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #00677e;
-  --color-primary-container: #00a0c2;
+  --color-primary: #835400;
+  --color-primary-container: #ffddb5;
   --color-on-primary: #ffffff;
-  --color-secondary: #9f402d;
-  --color-secondary-container: #fd876f;
-  --color-background: #fbf9f4;
-  --color-surface: #fbf9f4;
-  --color-surface-container: #f0eee9;
-  --color-surface-container-low: #f5f3ee;
-  --color-surface-container-high: #eae8e3;
-  --color-surface-container-highest: #e4e2dd;
-  --color-on-surface: #1b1c19;
-  --color-on-surface-variant: #56423e;
-  --color-outline: #89726d;
-  --color-outline-variant: #ddc0ba;
+  --color-secondary: #3c6a00;
+  --color-secondary-container: #b8f47a;
+  --color-tertiary: #8b3d9b;
+  --color-tertiary-container: #fed6ff;
+  --color-background: #fff8f1;
+  --color-surface: #fff8f1;
+  --color-surface-container: #f8edd9;
+  --color-surface-container-low: #fdf2de;
+  --color-surface-container-high: #f2e7d3;
+  --color-surface-container-highest: #ece1ce;
+  --color-on-surface: #201b0f;
+  --color-on-surface-variant: #57432b;
+  --color-outline: #8a7357;
+  --color-outline-variant: #dec2a2;
   --color-error: #ba1a1a;
+
+  /* Standard Tailwind Compatibility Mappings */
+  --color-border: var(--color-outline-variant);
+  --color-input: var(--color-outline-variant);
+  --color-ring: var(--color-primary);
+  --color-muted: var(--color-surface-container-high);
+  --color-muted-foreground: var(--color-on-surface-variant);
+  --color-accent: var(--color-surface-container-low);
+  --color-accent-foreground: var(--color-primary);
+  --color-destructive: var(--color-error);
+  --color-destructive-foreground: #ffffff;
   
   --radius-lg: 2rem;
   --radius-xl: 3rem;
@@ -24,6 +37,7 @@
   --radius-sm: 0.5rem;
 
   --font-plus-jakarta: "Plus Jakarta Sans", sans-serif;
+  --font-be-vietnam: "Be Vietnam Pro", sans-serif;
   --font-headline: "Plus Jakarta Sans", sans-serif;
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
@@ -48,25 +62,25 @@
 }
 
 :root {
-  --background: 48 24% 97%; /* #fbf9f4 */
-  --foreground: 70 8% 10%; /* #1b1c19 */
+  --background: 35 100% 97%; /* #fff8f1 */
+  --foreground: 41 35% 9%; /* #201b0f */
   --card: 0 0% 100%;
-  --card-foreground: 70 8% 10%;
+  --card-foreground: 41 35% 9%;
   --popover: 0 0% 100%;
-  --popover-foreground: 70 8% 10%;
-  --primary: 191 100% 25%; /* #00677e */
+  --popover-foreground: 41 35% 9%;
+  --primary: 38 100% 26%; /* #835400 */
   --primary-foreground: 0 0% 100%;
-  --secondary: 10 55% 40%; /* #9f402d */
+  --secondary: 86 100% 21%; /* #3c6a00 */
   --secondary-foreground: 0 0% 100%;
-  --muted: 48 10% 93%;
-  --muted-foreground: 25 15% 30%;
-  --accent: 191 100% 90%;
-  --accent-foreground: 191 100% 20%;
+  --muted: 41 20% 90%;
+  --muted-foreground: 34 25% 30%;
+  --accent: 38 100% 94%;
+  --accent-foreground: 38 100% 20%;
   --destructive: 0 75% 41%; /* #ba1a1a */
   --destructive-foreground: 0 0% 98%;
-  --border: 48 10% 88%;
-  --input: 48 10% 88%;
-  --ring: 191 100% 25%;
+  --border: 34 25% 85%;
+  --input: 34 25% 85%;
+  --ring: 38 100% 26%;
   --radius: 1rem;
 }
 

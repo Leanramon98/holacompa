@@ -1,89 +1,68 @@
 "use client";
 
-import Image from "next/image";
+import { useAdoptionStore } from "@/stores/useAdoptionStore";
 import { Pet } from "@/types";
-import { MapPin, ShieldCheck, CheckCircle, Info } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { formatPetAge, getPetTags } from "@/lib/utils/pet-helpers";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { MapPin, Heart, X, Star, History, Zap, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 
 interface PetCardProps {
   pet: Pet;
-  className?: string;
+  active?: boolean;
 }
 
-export function PetCard({ pet, className }: PetCardProps) {
-  const tags = getPetTags(pet);
-
+export function PetCard({ pet, active }: PetCardProps) {
   return (
     <div className={cn(
-      "bg-surface-container-low rounded-2xl overflow-hidden shadow-sm transition-transform duration-300 w-full h-full flex flex-col",
-      className
+      "absolute inset-0 bg-surface-container-lowest rounded-[40px] shadow-[0_32px_64px_-16px_rgba(32,27,15,0.2)] overflow-hidden transform transition-all duration-700",
+      active ? "rotate-0 scale-100 opacity-100" : "rotate-2 scale-[0.98] opacity-0"
     )}>
-      {/* Scrollable Content Area */}
-      <div className="flex-grow overflow-y-auto no-scrollbar">
-        {/* Main Pet Card Header */}
-        <div className="relative h-[600px] w-full shrink-0">
-          <Image
-            src={pet.photos[0]}
-            alt={pet.name}
-            fill
-            className="object-cover"
-            priority
-          />
-          {/* Overlay Info */}
-          <div className="absolute bottom-0 left-0 w-full p-6 md:p-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent text-white">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
-              <div>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-1">
-                  {pet.name}, {formatPetAge(pet.estimated_age_months)}
-                </h1>
-                <div className="flex items-center gap-2 opacity-90">
-                  <MapPin className="w-4 h-4" />
-                  <span className="text-base md:text-lg font-medium">Palermo, CABA (a 2.4 km)</span>
-                </div>
-              </div>
-              <div className="bg-primary-container text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 self-start md:self-auto shadow-lg">
-                <ShieldCheck className="w-4 h-4 fill-current" />
-                REFUGIO PATITAS
-              </div>
-            </div>
-            
-            {/* Quick Tags */}
-            <div className="flex flex-wrap gap-2 md:gap-3">
-              {tags.slice(0, 3).map(tag => (
-                <span key={tag} className="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-white/10">
-                  {tag}
-                </span>
-              ))}
-            </div>
+      <div className="relative h-full w-full">
+        <Image
+          src={pet.photos[0]}
+          alt={pet.name}
+          fill
+          className={cn(
+            "object-cover transition-transform duration-[2000ms]",
+            active ? "scale-100" : "scale-110"
+          )}
+        />
+        
+        {/* Editorial Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+        
+        {/* Category Badge */}
+        <div className="absolute top-8 right-8 animate-in fade-in zoom-in duration-700 delay-300">
+          <div className="bg-secondary-container/90 backdrop-blur-md text-on-secondary-container px-6 py-2 rounded-full flex items-center gap-2 font-black text-xs uppercase tracking-widest shadow-xl">
+            <ShieldCheck className="h-4 w-4" />
+            {pet.pet_type === "perro" ? "CANINO" : "FELINO"}
           </div>
         </div>
 
-        {/* Pet History / Description (Editorial Layout) */}
-        <div className="p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-8 bg-white/50 backdrop-blur-sm">
-          <div className="md:col-span-2 space-y-4">
-            <h3 className="font-label text-xs font-black uppercase tracking-[0.2em] text-secondary">Mi Historia</h3>
-            <p className="text-lg leading-relaxed text-on-surface/80 font-medium">
-              {pet.story || "Milo fue rescatado de una obra en construcción. Es un compañero sumamente leal que disfruta de las caminatas tranquilas y las tardes de sol. Buscamos una familia que le brinde el tiempo y amor que merece."}
-            </p>
-          </div>
-          <div className="space-y-6">
-            <h3 className="font-label text-xs font-black uppercase tracking-[0.2em] text-secondary">Salud</h3>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-primary" />
-                <span className="text-sm font-bold text-on-surface/70">Desparasitado</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-primary" />
-                <span className="text-sm font-bold text-on-surface/70">V6 / Rabia OK</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Info className="w-5 h-5 text-secondary opacity-40" />
-                <span className="text-sm font-bold text-on-surface/70">Sin condiciones previas</span>
-              </div>
+        {/* Content Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-10 text-white space-y-6">
+          <div className="space-y-2">
+            <div className="flex items-baseline gap-3">
+              <h1 className="font-plus-jakarta font-black text-5xl md:text-6xl tracking-tighter leading-none">{pet.name}</h1>
+              <span className="font-be-vietnam text-2xl font-medium opacity-80">{pet.age_numeric} {pet.age_numeric === 1 ? "año" : "años"}</span>
             </div>
+            <div className="flex items-center gap-2 opacity-60">
+              <MapPin className="h-4 w-4" />
+              <span className="text-sm font-black uppercase tracking-widest">{pet.location_name || "Buenos Aires, ARG"} • 1.5 km</span>
+            </div>
+          </div>
+          
+          <p className="font-be-vietnam text-lg leading-relaxed opacity-90 max-w-[90%] font-medium line-clamp-3">
+            {pet.description || "Soy un compañero ideal buscando un hogar para llenar de alegría y juegos infinitos."}
+          </p>
+
+          <div className="flex flex-wrap gap-2 pt-2">
+            {pet.tags?.map(tag => (
+              <span key={tag} className="px-4 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-black uppercase tracking-widest">
+                {tag}
+              </span>
+            ))}
           </div>
         </div>
       </div>

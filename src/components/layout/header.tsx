@@ -1,102 +1,123 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, PawPrint, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Search, Menu, X, Heart, ShoppingBag, Compass, LayoutGrid } from "lucide-react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
+const navigation = [
+  { name: "Descubrir", href: "/descubrir", icon: <Compass className="w-5 h-5" /> },
+  { name: "Adoptar", href: "/descubrir", icon: <Heart className="w-5 h-5" /> },
+  { name: "Market", href: "/marketplace", icon: <ShoppingBag className="w-5 h-5" /> },
+];
+
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  const navLinks = [
-    { name: "Adopción", href: "/descubrir" },
-    { name: "Marketplace", href: "/marketplace" },
-    { name: "Donar", href: "/donar" },
-    { name: "Comunidad", href: "/comunidad" },
-  ];
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 w-full z-50 glass-nav shadow-sm h-20 flex justify-between items-center px-4 md:px-8">
-      {/* Logo */}
-      <Link href="/" className="text-2xl font-bold tracking-tighter text-primary">
-        Hola Compa
-      </Link>
+    <header className={cn(
+      "fixed top-0 w-full z-50 transition-all duration-300 h-20 flex items-center px-6 md:px-12",
+      scrolled 
+        ? "bg-background/80 backdrop-blur-xl shadow-[0_8px_30px_rgba(32,27,15,0.06)]" 
+        : "bg-transparent"
+    )}>
+      <div className="container mx-auto flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 group">
+          <span className="text-2xl font-black text-primary font-plus-jakarta tracking-tight transition-transform group-hover:scale-105">
+            Hola Compa
+          </span>
+        </Link>
 
-      {/* Desktop Navigation */}
-      <div className="hidden md:flex gap-8 items-center font-plus-jakarta text-lg tracking-tight">
-        {navLinks.map((link) => {
-          const isActive = pathname === link.href;
-          return (
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-10">
+          {navigation.map((item) => (
             <Link
-              key={link.name}
-              href={link.href}
+              key={item.name}
+              href={item.href}
               className={cn(
-                "transition-all duration-300 pb-1",
-                isActive 
-                  ? "text-primary font-semibold border-b-2 border-primary" 
-                  : "text-on-surface opacity-80 hover:text-primary hover:opacity-100"
+                "text-sm font-black uppercase tracking-[0.2em] transition-all hover:text-primary",
+                pathname === item.href ? "text-primary" : "text-on-surface/50"
               )}
             >
-              {link.name}
+              {item.name}
             </Link>
-          );
-        })}
-      </div>
+          ))}
+        </nav>
 
-      {/* Actions */}
-      <div className="flex items-center gap-2 md:gap-4">
-        <Button variant="ghost" size="icon" className="text-on-surface-variant hover:bg-surface-container rounded-lg transition-all hidden sm:flex">
-          <PawPrint className="w-5 h-5" />
-        </Button>
-        <Button variant="ghost" size="icon" className="text-on-surface-variant hover:bg-surface-container rounded-lg transition-all">
-          <User className="w-5 h-5" />
-        </Button>
-        <Link 
-          href="/descubrir" 
-          className="editorial-gradient text-on-primary px-6 py-2 rounded-full font-semibold text-sm hidden md:block hover:opacity-90 transition-opacity"
-        >
-          Adoptar Ahora
-        </Link>
-        
-        {/* Mobile Menu Toggle */}
-        <button 
-          className="md:hidden p-2 text-on-surface"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        {/* Actions */}
+        <div className="flex items-center gap-4">
+          <button className="p-2 hover:bg-surface-container rounded-full transition-colors text-on-surface/60">
+            <Search className="w-5 h-5" />
+          </button>
+          
+          <div className="w-10 h-10 rounded-full bg-primary-container overflow-hidden ring-2 ring-white shadow-md active:scale-95 transition-transform cursor-pointer">
+            <img 
+              alt="User Profile" 
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcqKtDgcYOGefmptTKHlBSElGlwTSDPZEvl5cAvIZWaL_RjfI3yH3HFzdNJbQauKxFvG7847jN9JFCHIbuHEvmXxoAq5pwtFiGcxjivJqgklFZCZd4n95w8_aD85lzrdbgSZB_zA_HmCIjVturRs0BaCMn1-Ap6D4yJEuAYpOID2bqtIoi4QKwZn_MfC064fJEwutJvNedvh4ziYY6RzXwFhA8TsxtybLkMU-TPnhO7axRP-E57S9mKsTfz6WYbA5rgcAqUwv7R14" 
+            />
+          </div>
+
+          <button 
+            className="md:hidden p-2 hover:bg-surface-container rounded-full"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="absolute top-20 left-0 w-full bg-surface border-b shadow-xl md:hidden animate-in fade-in slide-in-from-top-4">
-          <div className="flex flex-col p-6 gap-4">
-            {navLinks.map((link) => (
+      {isOpen && (
+        <div className="md:hidden fixed inset-0 top-20 bg-background/95 backdrop-blur-xl z-50 p-6 animate-in fade-in slide-in-from-top-4">
+          <div className="flex flex-col gap-8">
+            {navigation.map((item) => (
               <Link
-                key={link.name}
-                href={link.href}
-                className={cn(
-                  "text-lg font-medium py-2",
-                  pathname === link.href ? "text-primary" : "text-on-surface/80"
-                )}
-                onClick={() => setIsMenuOpen(false)}
+                key={item.name}
+                href={item.href}
+                className="text-3xl font-black text-on-surface font-plus-jakarta tracking-tight py-4 border-b border-outline-variant/10 flex items-center justify-between group"
+                onClick={() => setIsOpen(false)}
               >
-                {link.name}
+                {item.name}
+                <ArrowRight className="w-8 h-8 opacity-0 group-hover:opacity-100 transition-all text-primary" />
               </Link>
             ))}
-            <Link 
-              href="/descubrir"
-              className="editorial-gradient text-on-primary px-6 py-4 rounded-xl font-bold text-center mt-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Adoptar Ahora
-            </Link>
+            <Button className="w-full py-8 rounded-full bg-primary text-on-primary font-black text-xl uppercase tracking-widest mt-8">
+              Postular Ahora
+            </Button>
           </div>
         </div>
       )}
-    </nav>
+    </header>
+  );
+}
+
+function ArrowRight(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
   );
 }

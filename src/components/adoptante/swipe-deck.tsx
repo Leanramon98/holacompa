@@ -1,159 +1,110 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Pet } from "@/types";
-import { PetCard } from "./pet-card";
-import { Button } from "@/components/ui/button";
-import { X, Heart, Rocket, Sparkles, Undo2 } from "lucide-react";
 import { useAdoptionStore } from "@/stores/useAdoptionStore";
+import { PetCard } from "./pet-card";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { X, Heart, Star, History, Zap, Rocket } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-interface SwipeDeckProps {
-  pets: Pet[];
-}
+export function SwipeDeck() {
+  const { pets, currentIndex, setIndex, filters } = useAdoptionStore();
+  const [direction, setDirection] = useState<"left" | "right" | "up" | null>(null);
 
-export function SwipeDeck({ pets }: SwipeDeckProps) {
-  const { addToHistory, popFromHistory, toggleFavorite } = useAdoptionStore();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const filteredPets = useMemo(() => {
+    return pets.filter(p => {
+      if (filters.pet_type && p.pet_type !== filters.pet_type) return false;
+      if (filters.age && p.age !== filters.age) return false;
+      if (filters.size !== "todos" && p.size !== filters.size) return false;
+      return true;
+    });
+  }, [pets, filters]);
 
-  const currentPet = useMemo(() => pets[currentIndex], [pets, currentIndex]);
-  const nextPet = useMemo(() => pets[currentIndex + 1], [pets, currentIndex]);
+  const currentPet = filteredPets[currentIndex];
 
-  // Gestures
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotate = useTransform(x, [-300, 300], [-15, 15]);
-  const opacity = useTransform(x, [-300, -200, 0, 200, 300], [0, 1, 1, 1, 0]);
-  const favOpacity = useTransform(x, [100, 200], [0, 1]);
-  const passOpacity = useTransform(x, [-200, -100], [1, 0]);
-  
-  const handleSwipe = useCallback((direction: 'left' | 'right' | 'up') => {
-    if (currentIndex >= pets.length) return;
-    
-    addToHistory(pets[currentIndex].id);
-    
-    if (direction === 'right') {
-      toggleFavorite(pets[currentIndex].id);
-    } else if (direction === 'up') {
-      console.log("Postulado a:", pets[currentIndex].name);
-    }
+  const handleSwipe = (dir: "left" | "right" | "up") => {
+    setDirection(dir);
+    setTimeout(() => {
+      setDirection(null);
+      setIndex((currentIndex + 1) % filteredPets.length);
+    }, 400);
+  };
 
-    setCurrentIndex(prev => prev + 1);
-    x.set(0);
-    y.set(0);
-  }, [currentIndex, pets, addToHistory, toggleFavorite, x, y]);
-
-  const handleUndo = useCallback(() => {
-    const lastId = popFromHistory();
-    if (lastId && currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-    }
-  }, [popFromHistory, currentIndex]);
-
-  if (currentIndex >= pets.length) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 px-4 text-center animate-in fade-in zoom-in-95 duration-700">
-        <div className="h-40 w-40 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-8 animate-pulse">
-          <Sparkles className="h-16 w-16" />
-        </div>
-        <h2 className="text-4xl font-extrabold text-on-surface mb-4 tracking-tighter">
-          ¡Terminaste por hoy!
-        </h2>
-        <p className="text-on-surface-variant max-w-md mx-auto leading-relaxed mb-10 text-lg">
-          Viste todas las mascotas que matchean con tu perfil. Volvé pronto que siempre llegan nuevos compas.
-        </p>
-        <Button 
-          onClick={() => setCurrentIndex(0)}
-          className="rounded-full editorial-gradient text-white font-bold px-10 h-14 text-lg shadow-xl hover:scale-105 active:scale-95 transition-all"
-        >
-          Volver a empezar
-        </Button>
+  if (!currentPet) return (
+    <div className="flex flex-col items-center justify-center p-20 text-center space-y-8 animate-in fade-in zoom-in duration-1000">
+      <div className="w-40 h-40 bg-surface-container-low rounded-full flex items-center justify-center border-2 border-outline-variant/10">
+        <Rocket className="h-20 w-20 text-primary opacity-30 animate-pulse" />
       </div>
-    );
-  }
+      <h2 className="text-4xl font-black font-plus-jakarta tracking-tight">No hay más "Compas" cerca</h2>
+      <p className="text-on-surface-variant/60 font-medium max-w-sm text-lg">Ajustá tus filtros para seguir descubriendo nuevas historias.</p>
+      <Button 
+        onClick={() => setIndex(0)} 
+        className="bg-primary text-on-primary rounded-full px-12 py-8 font-black uppercase tracking-widest text-lg shadow-2xl hover:scale-105 transition-all h-auto border-none"
+      >
+        Volver a empezar
+      </Button>
+    </div>
+  );
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto flex flex-col items-center">
-      {/* The Cards Stack */}
-      <div className="relative w-full h-[800px] mb-8">
-        <AnimatePresence mode="popLayout">
-          {/* Base Card (Looking from behind) */}
-          {nextPet && (
-            <div className="absolute inset-0 scale-[0.98] blur-[1px] opacity-40 translate-y-4 origin-bottom pointer-events-none">
-              <PetCard pet={nextPet} />
-            </div>
-          )}
-
-          {/* Current Card (Interactive) */}
-          <motion.div
-            key={currentPet.id}
-            style={{ x, y, rotate, opacity }}
-            drag
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-            onDragEnd={(_, info) => {
-              const swipeThreshold = 150;
-              if (info.offset.x > swipeThreshold) handleSwipe('right');
-              else if (info.offset.x < -swipeThreshold) handleSwipe('left');
-              else if (info.offset.y < -swipeThreshold) handleSwipe('up');
-            }}
-            whileDrag={{ scale: 1.02, cursor: 'grabbing' }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="absolute inset-0 z-10"
-          >
-            <PetCard pet={currentPet} />
-            
-            {/* Visual Indicators while swiping */}
-            <motion.div 
-              style={{ opacity: favOpacity }}
-              className="absolute top-20 right-10 rotate-12 border-4 border-primary text-primary px-8 py-3 rounded-2xl text-4xl font-black uppercase pointer-events-none z-20 shadow-2xl bg-white/10 backdrop-blur-sm"
-            >
-              FAVORITO
-            </motion.div>
-            <motion.div 
-              style={{ opacity: passOpacity }}
-              className="absolute top-20 left-10 -rotate-12 border-4 border-error text-error px-8 py-3 rounded-2xl text-4xl font-black uppercase pointer-events-none z-20 shadow-2xl bg-white/10 backdrop-blur-sm"
-            >
-              PASAR
-            </motion.div>
-          </motion.div>
-        </AnimatePresence>
+    <div className="w-full max-w-lg aspect-[3/4] relative mx-auto group">
+      {/* Visual Depth Stacks */}
+      <div className="absolute inset-0 translate-y-6 scale-90 bg-surface-container-high rounded-[40px] -rotate-3 opacity-40 -z-10 shadow-lg" />
+      <div className="absolute inset-0 translate-y-3 scale-95 bg-surface-container rounded-[40px] rotate-2 opacity-60 -z-10 shadow-lg" />
+      
+      {/* Active Pet Card */}
+      <div className={cn(
+          "transition-all duration-500 ease-out h-full w-full",
+          direction === "left" && "-translate-x-[200%] -rotate-12 opacity-0",
+          direction === "right" && "translate-x-[200%] rotate-12 opacity-0",
+          direction === "up" && "-translate-y-[200%] scale-110 opacity-0"
+        )}>
+        <PetCard pet={currentPet} active={!direction} />
       </div>
 
-      {/* Interaction Floating Buttons */}
-      <div className="flex justify-center items-center gap-8 -mt-20 relative z-20">
-        {/* Undo (Added from previous version, it was useful) */}
+      {/* Floating Iconic Buttons */}
+      <div className="absolute -bottom-32 left-0 right-0 flex items-center justify-center gap-6 px-10 animate-in slide-in-from-bottom-20 duration-1000">
+        {/* Rewind */}
         <button 
-          onClick={handleUndo}
-          className="w-14 h-14 rounded-full bg-white shadow-lg text-on-surface-variant hover:bg-surface-container transition-all flex items-center justify-center transform hover:scale-110 active:scale-95 group/undo border border-outline-variant/10"
+          onClick={() => setIndex(Math.max(0, currentIndex - 1))}
+          className="w-14 h-14 flex items-center justify-center rounded-full bg-surface-container-lowest text-primary shadow-[0_16px_32px_rgba(0,0,0,0.06)] border border-outline-variant/10 hover:scale-125 active:scale-90 transition-all group"
         >
-          <Undo2 className="w-6 h-6" />
+          <History className="h-6 w-6 group-hover:rotate-[-45deg] transition-transform" />
         </button>
 
-        {/* Pass (Left) */}
+        {/* Pass (X) */}
         <button 
-          onClick={() => handleSwipe('left')}
-          className="w-16 h-16 rounded-full bg-white shadow-lg text-error hover:bg-error/5 transition-all flex items-center justify-center transform hover:scale-110 active:scale-95 group/pass border border-outline-variant/10"
+          onClick={() => handleSwipe("left")}
+          className="w-20 h-20 flex items-center justify-center rounded-full bg-white text-error shadow-[0_24px_48px_rgba(186,26,26,0.15)] border border-error/5 hover:scale-110 active:scale-90 transition-all hover:bg-error hover:text-white"
         >
-          <X className="w-8 h-8" strokeWidth={3} />
+          <X className="h-10 w-10 stroke-[3px]" />
         </button>
 
-        {/* Postulate (Center) */}
+        {/* Super Like (Star) */}
         <button 
-          onClick={() => handleSwipe('up')}
-          className="editorial-gradient w-24 h-24 rounded-full shadow-2xl text-white flex flex-col items-center justify-center transform hover:scale-110 active:scale-95 group/postulate animate-bounce-subtle"
+          onClick={() => handleSwipe("up")}
+          className="w-18 h-18 flex items-center justify-center rounded-full bg-surface-container-lowest text-tertiary shadow-[0_16px_32px_rgba(139,61,155,0.1)] border border-tertiary/10 hover:scale-110 active:scale-90 transition-all hover:bg-tertiary hover:text-white"
         >
-          <Rocket className="w-10 h-10 mb-1 fill-white" strokeWidth={2} />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-none">Postular</span>
+          <Star className="h-8 w-8 fill-current" />
         </button>
 
-        {/* Favorite (Right) */}
+        {/* Like (Heart) */}
         <button 
-          onClick={() => handleSwipe('right')}
-          className="w-16 h-16 rounded-full bg-white shadow-lg text-primary hover:bg-primary/5 transition-all flex items-center justify-center transform hover:scale-110 active:scale-95 group/fav border border-outline-variant/10"
+          onClick={() => handleSwipe("right")}
+          className="w-20 h-20 flex items-center justify-center rounded-full bg-primary text-on-primary shadow-[0_24px_48px_rgba(131,84,0,0.2)] hover:scale-110 active:scale-90 transition-all group border-none"
         >
-          <Heart className="w-8 h-8 fill-primary/10" strokeWidth={3} />
+          <Heart className="h-10 w-10 fill-current group-hover:scale-125 transition-transform" />
+        </button>
+
+        {/* Boost (Bolt) */}
+        <button className="w-14 h-14 flex items-center justify-center rounded-full bg-surface-container-lowest text-secondary shadow-[0_16px_32px_rgba(0,0,0,0.06)] border border-outline-variant/10 hover:scale-125 active:scale-90 transition-all">
+          <Zap className="h-6 w-6 fill-current" />
         </button>
       </div>
+
+      {/* Decorative Textures */}
+      <div className="fixed top-[20%] -left-20 w-80 h-80 bg-tertiary-container/10 rounded-full blur-[120px] -z-20 animate-pulse" />
+      <div className="fixed bottom-[10%] -right-20 w-96 h-96 bg-primary-container/20 rounded-full blur-[140px] -z-20 animate-pulse" />
     </div>
   );
 }

@@ -1,11 +1,18 @@
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { Metadata } from "next";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-plus-jakarta",
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
+
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ["latin"],
+  variable: "--font-be-vietnam",
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
@@ -20,10 +27,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="light">
-      <body className={`${plusJakartaSans.variable} font-plus-jakarta antialiased min-h-screen flex flex-col pt-20`}>
+    <html lang="es" className={`${plusJakartaSans.variable} ${beVietnamPro.variable}`}>
+      <body className="antialiased min-h-screen bg-background text-on-surface font-be-vietnam">
         <Header />
-        <main className="flex-grow">{children}</main>
+        <main>
+          {children}
+        </main>
         <Footer />
       </body>
     </html>
