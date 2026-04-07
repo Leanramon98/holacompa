@@ -1,17 +1,16 @@
-import type { Metadata } from "next";
-import { Nunito_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 
-const nunitoSans = Nunito_Sans({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-nunito-sans",
-  weight: ["300", "400", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "Hola Compa 🐾 Encontrá a tu próximo mejor amigo",
+  title: "Hola Compa 🐾 La Estancia Digital de Mascotas",
   description: "La plataforma de adopción y marketplace para mascotas en Argentina. Conectamos adoptantes con refugios verificados.",
 };
 
@@ -21,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body className={`${nunitoSans.variable} font-sans antialiased bg-crema text-marron min-h-screen flex flex-col`}>
+    <html lang="es" className="light">
+      <body className={`${plusJakartaSans.variable} font-plus-jakarta antialiased min-h-screen flex flex-col pt-20`}>
         <Header />
         <main className="flex-grow">{children}</main>
         <Footer />

@@ -4,154 +4,113 @@ import { useAdoptionStore } from "@/stores/useAdoptionStore";
 import { PetType } from "@/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Search, X, Dog, Cat, Rabbit, HelpCircle, Filter, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { Check } from "lucide-react";
 
-const types: { value: PetType | "todos"; label: string; icon: any }[] = [
-  { value: "todos", label: "Todos", icon: HelpCircle },
-  { value: "perro", label: "Perros", icon: Dog },
-  { value: "gato", label: "Gatos", icon: Cat },
-  { value: "conejo", label: "Conejos", icon: Rabbit },
+const species = [
+  { value: "perro", label: "Perros" },
+  { value: "gato", label: "Gatos" },
+  { value: "otros", label: "Otros" },
+];
+
+const ages = [
+  { value: "cachorro", label: "Cachorro (0-1 año)" },
+  { value: "adulto", label: "Adulto (1-7 años)" },
+  { value: "senior", label: "Senior (7+ años)" },
 ];
 
 export function FilterSection() {
-  const { filters, setFilters, resetFilters } = useAdoptionStore();
-  const [isOpen, setIsOpen] = useState(false);
+  const { filters, setFilters } = useAdoptionStore();
 
   return (
-    <div className="w-full space-y-6">
-      {/* Search Bar */}
-      <div className="relative group">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-marron/30 group-focus-within:text-primary transition-colors">
-          <Search className="h-5 w-5" />
-        </div>
-        <input
-          type="text"
-          placeholder="Buscar por nombre o raza..."
-          value={filters.searchQuery || ""}
-          onChange={(e) => setFilters({ searchQuery: e.target.value })}
-          className="w-full h-14 pl-12 pr-4 rounded-3xl bg-white border border-marron/10 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all text-marron font-medium"
-        />
-        {filters.searchQuery && (
-          <button 
-            onClick={() => setFilters({ searchQuery: "" })}
-            className="absolute inset-y-0 right-0 pr-4 flex items-center text-marron/30 hover:text-marron/60"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      </div>
-
-      {/* Main Categories (Pet Types) */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        {types.map((type) => {
-          const Icon = type.icon;
-          const isActive = filters.pet_type === type.value;
-          return (
+    <div className="space-y-10">
+      {/* Species */}
+      <div>
+        <span className="font-bold text-xs uppercase tracking-[0.2em] text-secondary block mb-4">Especie</span>
+        <div className="flex flex-wrap gap-2">
+          {species.map((s) => (
             <button
-              key={type.value}
-              onClick={() => setFilters({ pet_type: type.value })}
+              key={s.value}
+              onClick={() => setFilters({ pet_type: s.value as any })}
               className={cn(
-                "flex items-center gap-2 px-6 py-3 rounded-full border font-bold text-sm whitespace-nowrap transition-all shadow-sm",
-                isActive 
-                  ? "bg-primary text-white border-primary-dark" 
-                  : "bg-white text-marron/70 border-marron/10 hover:border-primary/50"
+                "px-5 py-2.5 rounded-full text-sm font-bold transition-all border shadow-sm",
+                filters.pet_type === s.value 
+                  ? "bg-primary text-white border-primary shadow-primary/20" 
+                  : "bg-surface-container text-on-surface hover:bg-surface-container-high border-transparent"
               )}
             >
-              <Icon className="h-4 w-4" />
-              {type.label}
+              {s.label}
             </button>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
-      {/* Detailed Filters (Collapsible) */}
-      <div className="w-full bg-white rounded-3xl border border-marron/10 overflow-hidden">
-        <button 
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-full px-6 py-4 flex items-center justify-between hover:bg-marron/5 transition-colors"
+      {/* Age Range */}
+      <div>
+        <span className="font-bold text-xs uppercase tracking-[0.2em] text-secondary block mb-4">Edad</span>
+        <div className="space-y-4">
+          {ages.map((age) => (
+            <label 
+              key={age.value} 
+              className="flex items-center gap-4 cursor-pointer group select-none"
+              onClick={() => setFilters({ age: age.value as any })}
+            >
+              <div className={cn(
+                "w-6 h-6 rounded-lg border-2 transition-all flex items-center justify-center",
+                filters.age === age.value 
+                  ? "bg-primary border-primary" 
+                  : "border-outline-variant group-hover:border-primary"
+              )}>
+                {filters.age === age.value && <Check className="w-4 h-4 text-white" strokeWidth={4} />}
+              </div>
+              <span className={cn(
+                "text-lg font-medium transition-colors",
+                filters.age === age.value ? "text-on-surface" : "text-on-surface/50 group-hover:text-on-surface"
+              )}>
+                {age.label}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Size */}
+      <div>
+        <span className="font-bold text-xs uppercase tracking-[0.2em] text-secondary block mb-4">Tamaño</span>
+        <select 
+          className="w-full bg-surface-container-highest border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-lg font-bold p-4 appearance-none cursor-pointer text-on-surface"
+          value={filters.size}
+          onChange={(e) => setFilters({ size: e.target.value as any })}
         >
-          <div className="flex items-center gap-2 font-extrabold text-marron">
-            <Filter className="h-4 w-4" />
-            <span>Filtros avanzados</span>
-          </div>
-          {isOpen ? <ChevronUp className="h-4 w-4 text-marron/40" /> : <ChevronDown className="h-4 w-4 text-marron/40" />}
-        </button>
+          <option value="todos">Todos los tamaños</option>
+          <option value="pequeño">Pequeño</option>
+          <option value="mediano">Mediano</option>
+          <option value="grande">Grande</option>
+        </select>
+      </div>
 
-        {isOpen && (
-          <div className="px-6 pb-6 pt-2 space-y-8 animate-in fade-in slide-in-from-top-2 duration-300">
-            {/* Sizing & Age (simplified for now) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-3">
-                <p className="text-sm font-extrabold uppercase tracking-widest text-marron/40">Tamaño</p>
-                <div className="flex flex-wrap gap-2">
-                  {["todos", "chico", "mediano", "grande"].map((size) => (
-                    <Button
-                      key={size}
-                      variant="ghost"
-                      onClick={() => setFilters({ size: size as any })}
-                      className={cn(
-                        "rounded-xl h-9 px-4 font-bold border",
-                        filters.size === size 
-                          ? "bg-primary/10 text-primary border-primary/20" 
-                          : "border-marron/5 text-marron/60 hover:bg-marron/5"
-                      )}
-                    >
-                      {size.charAt(0).toUpperCase() + size.slice(1)}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <p className="text-sm font-extrabold uppercase tracking-widest text-marron/40">Energía</p>
-                <div className="flex flex-wrap gap-2">
-                  {["todos", "bajo", "medio", "alto"].map((lvl) => (
-                    <Button
-                      key={lvl}
-                      variant="ghost"
-                      onClick={() => setFilters({ energy_level: lvl as any })}
-                      className={cn(
-                        "rounded-xl h-9 px-4 font-bold border",
-                        filters.energy_level === lvl 
-                          ? "bg-primary/10 text-primary border-primary/20" 
-                          : "border-marron/5 text-marron/60 hover:bg-marron/5"
-                      )}
-                    >
-                      {lvl.charAt(0).toUpperCase() + lvl.slice(1)}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Distance Slider (Simplified visual) */}
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-extrabold uppercase tracking-widest text-marron/40">Distancia máxima</p>
-                <span className="text-sm font-bold text-primary">{filters.max_distance} km</span>
-              </div>
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={filters.max_distance}
-                onChange={(e) => setFilters({ max_distance: parseInt(e.target.value) })}
-                className="w-full accent-primary cursor-pointer border-none"
-              />
-            </div>
-
-            <div className="pt-4 flex items-center justify-end">
-              <Button 
-                variant="ghost" 
-                onClick={resetFilters}
-                className="text-marron/40 hover:text-primary font-bold text-sm"
-              >
-                Limpiar todos los filtros
-              </Button>
-            </div>
-          </div>
-        )}
+      {/* Energy Level */}
+      <div>
+        <div className="flex justify-between items-end mb-4">
+          <span className="font-bold text-xs uppercase tracking-[0.2em] text-secondary block">Nivel de Energía</span>
+          <span className="text-[10px] font-black uppercase text-primary tracking-widest">{filters.energy_level}</span>
+        </div>
+        <div className="flex gap-1.5 h-2.5">
+          {[1, 2, 3, 4, 5].map((step) => (
+            <div 
+              key={step}
+              className={cn(
+                "flex-1 rounded-full transition-all duration-500",
+                step <= (filters.energy_level === "alto" ? 5 : filters.energy_level === "medio" ? 3 : 1)
+                  ? "bg-primary shadow-[0_0_8px_rgba(0,103,126,0.3)]" 
+                  : "bg-surface-container-highest"
+              )}
+            />
+          ))}
+        </div>
+        <p className="text-[11px] mt-4 text-on-surface-variant font-bold leading-relaxed opacity-60 flex gap-2 items-center italic">
+          <span className="w-1 h-1 rounded-full bg-secondary" />
+          Ideal para departamentos y vida urbana
+        </p>
       </div>
     </div>
   );

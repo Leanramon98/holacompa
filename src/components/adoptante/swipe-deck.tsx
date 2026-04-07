@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-mo
 import { Pet } from "@/types";
 import { PetCard } from "./pet-card";
 import { Button } from "@/components/ui/button";
-import { Undo2, X, Heart, Star, Sparkles } from "lucide-react";
+import { X, Heart, Rocket, Sparkles, Undo2 } from "lucide-react";
 import { useAdoptionStore } from "@/stores/useAdoptionStore";
 
 interface SwipeDeckProps {
@@ -15,33 +15,27 @@ interface SwipeDeckProps {
 export function SwipeDeck({ pets }: SwipeDeckProps) {
   const { addToHistory, popFromHistory, toggleFavorite } = useAdoptionStore();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lastDirection, setLastDirection] = useState<string | undefined>();
 
   const currentPet = useMemo(() => pets[currentIndex], [pets, currentIndex]);
   const nextPet = useMemo(() => pets[currentIndex + 1], [pets, currentIndex]);
 
-  // Gestos
+  // Gestures
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-15, 15]);
-  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
-  const favOpacity = useTransform(x, [50, 150], [0, 1]);
-  const passOpacity = useTransform(x, [-150, -50], [1, 0]);
-  const adoptOpacity = useTransform(y, [-150, -50], [1, 0]);
+  const rotate = useTransform(x, [-300, 300], [-15, 15]);
+  const opacity = useTransform(x, [-300, -200, 0, 200, 300], [0, 1, 1, 1, 0]);
+  const favOpacity = useTransform(x, [100, 200], [0, 1]);
+  const passOpacity = useTransform(x, [-200, -100], [1, 0]);
   
   const handleSwipe = useCallback((direction: 'left' | 'right' | 'up') => {
     if (currentIndex >= pets.length) return;
     
-    setLastDirection(direction);
     addToHistory(pets[currentIndex].id);
     
     if (direction === 'right') {
-      console.log("Favorito:", pets[currentIndex].name);
       toggleFavorite(pets[currentIndex].id);
     } else if (direction === 'up') {
       console.log("Postulado a:", pets[currentIndex].name);
-    } else {
-      console.log("Pasado:", pets[currentIndex].name);
     }
 
     setCurrentIndex(prev => prev + 1);
@@ -53,26 +47,24 @@ export function SwipeDeck({ pets }: SwipeDeckProps) {
     const lastId = popFromHistory();
     if (lastId && currentIndex > 0) {
       setCurrentIndex(prev => prev - 1);
-      setLastDirection(undefined);
     }
   }, [popFromHistory, currentIndex]);
 
   if (currentIndex >= pets.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+      <div className="flex flex-col items-center justify-center py-20 px-4 text-center animate-in fade-in zoom-in-95 duration-700">
         <div className="h-40 w-40 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-8 animate-pulse">
           <Sparkles className="h-16 w-16" />
         </div>
-        <h2 className="text-3xl font-extrabold text-marron mb-4 tracking-tight">
-          ¡Viste a todos los compas por hoy!
+        <h2 className="text-4xl font-extrabold text-on-surface mb-4 tracking-tighter">
+          ¡Terminaste por hoy!
         </h2>
-        <p className="text-marron/60 max-w-md mx-auto leading-relaxed mb-10">
-          Por ahora viste todas las mascotas que matchean. Volvé pronto, siempre llegan compas nuevos buscando un hogar.
+        <p className="text-on-surface-variant max-w-md mx-auto leading-relaxed mb-10 text-lg">
+          Viste todas las mascotas que matchean con tu perfil. Volvé pronto que siempre llegan nuevos compas.
         </p>
         <Button 
-          variant="outline" 
           onClick={() => setCurrentIndex(0)}
-          className="rounded-full border-primary/20 text-primary font-bold px-8 h-12"
+          className="rounded-full editorial-gradient text-white font-bold px-10 h-14 text-lg shadow-xl hover:scale-105 active:scale-95 transition-all"
         >
           Volver a empezar
         </Button>
@@ -81,13 +73,13 @@ export function SwipeDeck({ pets }: SwipeDeckProps) {
   }
 
   return (
-    <div className="relative w-full max-w-sm mx-auto h-[600px] flex flex-col gap-10">
+    <div className="relative w-full max-w-2xl mx-auto flex flex-col items-center">
       {/* The Cards Stack */}
-      <div className="relative flex-grow pointer-events-none">
+      <div className="relative w-full h-[800px] mb-8">
         <AnimatePresence mode="popLayout">
           {/* Base Card (Looking from behind) */}
           {nextPet && (
-            <div className="absolute inset-0 scale-[0.92] blur-[1px] opacity-40 translate-y-2 origin-bottom">
+            <div className="absolute inset-0 scale-[0.98] blur-[1px] opacity-40 translate-y-4 origin-bottom pointer-events-none">
               <PetCard pet={nextPet} />
             </div>
           )}
@@ -99,83 +91,68 @@ export function SwipeDeck({ pets }: SwipeDeckProps) {
             drag
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             onDragEnd={(_, info) => {
-              const swipeThreshold = 100;
+              const swipeThreshold = 150;
               if (info.offset.x > swipeThreshold) handleSwipe('right');
               else if (info.offset.x < -swipeThreshold) handleSwipe('left');
               else if (info.offset.y < -swipeThreshold) handleSwipe('up');
             }}
-            whileDrag={{ scale: 1.05, cursor: 'grabbing' }}
+            whileDrag={{ scale: 1.02, cursor: 'grabbing' }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="absolute inset-0 pointer-events-auto z-10"
+            className="absolute inset-0 z-10"
           >
             <PetCard pet={currentPet} />
             
             {/* Visual Indicators while swiping */}
             <motion.div 
               style={{ opacity: favOpacity }}
-              className="absolute inset-x-0 top-10 flex justify-center z-20 pointer-events-none"
+              className="absolute top-20 right-10 rotate-12 border-4 border-primary text-primary px-8 py-3 rounded-2xl text-4xl font-black uppercase pointer-events-none z-20 shadow-2xl bg-white/10 backdrop-blur-sm"
             >
-              <div className="bg-primary/90 text-white font-black text-4xl px-8 py-3 rounded-2xl rotate-12 shadow-xl border-4 border-white/20">
-                FAVORITO
-              </div>
+              FAVORITO
             </motion.div>
             <motion.div 
               style={{ opacity: passOpacity }}
-              className="absolute inset-x-0 top-10 flex justify-center z-20 pointer-events-none"
+              className="absolute top-20 left-10 -rotate-12 border-4 border-error text-error px-8 py-3 rounded-2xl text-4xl font-black uppercase pointer-events-none z-20 shadow-2xl bg-white/10 backdrop-blur-sm"
             >
-              <div className="bg-marron/90 text-white font-black text-4xl px-8 py-3 rounded-2xl -rotate-12 shadow-xl border-4 border-white/20">
-                PASAR
-              </div>
-            </motion.div>
-            <motion.div 
-              style={{ opacity: adoptOpacity }}
-              className="absolute inset-x-0 top-10 flex justify-center z-20 pointer-events-none"
-            >
-              <div className="bg-marron/90 text-white font-black text-4xl px-8 py-3 rounded-2xl shadow-xl border-4 border-white/20">
-                QUIERO ADOPTAR
-              </div>
+              PASAR
             </motion.div>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-between px-2">
-        <Button
-          variant="outline"
-          size="icon"
+      {/* Interaction Floating Buttons */}
+      <div className="flex justify-center items-center gap-8 -mt-20 relative z-20">
+        {/* Undo (Added from previous version, it was useful) */}
+        <button 
           onClick={handleUndo}
-          className="h-14 w-14 rounded-full border-marron/5 bg-white shadow-lg text-marron hover:bg-marron/5 hover:text-primary transition-all group"
+          className="w-14 h-14 rounded-full bg-white shadow-lg text-on-surface-variant hover:bg-surface-container transition-all flex items-center justify-center transform hover:scale-110 active:scale-95 group/undo border border-outline-variant/10"
         >
-          <Undo2 className="h-6 w-6 group-active:-rotate-90 transition-transform" />
-        </Button>
-        
-        <Button
-          variant="outline"
-          size="icon"
+          <Undo2 className="w-6 h-6" />
+        </button>
+
+        {/* Pass (Left) */}
+        <button 
           onClick={() => handleSwipe('left')}
-          className="h-16 w-16 rounded-full border-marron/5 bg-white shadow-lg text-marron/40 hover:bg-marron/5 hover:text-marron transition-all"
+          className="w-16 h-16 rounded-full bg-white shadow-lg text-error hover:bg-error/5 transition-all flex items-center justify-center transform hover:scale-110 active:scale-95 group/pass border border-outline-variant/10"
         >
-          <X className="h-8 w-8" />
-        </Button>
+          <X className="w-8 h-8" strokeWidth={3} />
+        </button>
 
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => handleSwipe('right')}
-          className="h-20 w-20 rounded-full border-primary/5 bg-white shadow-xl text-primary hover:bg-primary/5 hover:scale-110 active:scale-95 transition-all"
-        >
-          <Heart className="h-10 w-10 fill-primary/10" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
+        {/* Postulate (Center) */}
+        <button 
           onClick={() => handleSwipe('up')}
-          className="h-20 w-20 rounded-full border-marron/5 bg-white shadow-xl text-marron hover:bg-marron/5 hover:scale-110 active:scale-95 transition-all"
+          className="editorial-gradient w-24 h-24 rounded-full shadow-2xl text-white flex flex-col items-center justify-center transform hover:scale-110 active:scale-95 group/postulate animate-bounce-subtle"
         >
-          <Star className="h-10 w-10 text-marron fill-marron/10" />
-        </Button>
+          <Rocket className="w-10 h-10 mb-1 fill-white" strokeWidth={2} />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-none">Postular</span>
+        </button>
+
+        {/* Favorite (Right) */}
+        <button 
+          onClick={() => handleSwipe('right')}
+          className="w-16 h-16 rounded-full bg-white shadow-lg text-primary hover:bg-primary/5 transition-all flex items-center justify-center transform hover:scale-110 active:scale-95 group/fav border border-outline-variant/10"
+        >
+          <Heart className="w-8 h-8 fill-primary/10" strokeWidth={3} />
+        </button>
       </div>
     </div>
   );
