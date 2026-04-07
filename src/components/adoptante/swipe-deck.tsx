@@ -25,6 +25,9 @@ export function SwipeDeck({ pets }: SwipeDeckProps) {
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+  const favOpacity = useTransform(x, [50, 150], [0, 1]);
+  const passOpacity = useTransform(x, [-150, -50], [1, 0]);
+  const adoptOpacity = useTransform(y, [-150, -50], [1, 0]);
   
   const handleSwipe = useCallback((direction: 'left' | 'right' | 'up') => {
     if (currentIndex >= pets.length) return;
@@ -108,36 +111,30 @@ export function SwipeDeck({ pets }: SwipeDeckProps) {
             <PetCard pet={currentPet} />
             
             {/* Visual Indicators while swiping */}
-            {x.get() > 50 && (
-              <motion.div 
-                style={{ opacity: useTransform(x, [50, 150], [0, 1]) }}
-                className="absolute inset-x-0 top-10 flex justify-center z-20 pointer-events-none"
-              >
-                <div className="bg-primary/90 text-white font-black text-4xl px-8 py-3 rounded-2xl rotate-12 shadow-xl border-4 border-white/20">
-                  FAVORITO
-                </div>
-              </motion.div>
-            )}
-            {x.get() < -50 && (
-              <motion.div 
-                style={{ opacity: useTransform(x, [-50, -150], [0, 1]) }}
-                className="absolute inset-x-0 top-10 flex justify-center z-20 pointer-events-none"
-              >
-                <div className="bg-marron/90 text-white font-black text-4xl px-8 py-3 rounded-2xl -rotate-12 shadow-xl border-4 border-white/20">
-                  PASAR
-                </div>
-              </motion.div>
-            )}
-            {y.get() < -50 && (
-              <motion.div 
-                style={{ opacity: useTransform(y, [-50, -150], [0, 1]) }}
-                className="absolute inset-x-0 top-10 flex justify-center z-20 pointer-events-none"
-              >
-                <div className="bg-marron-dark text-white font-black text-4xl px-8 py-3 rounded-2xl shadow-xl border-4 border-white/20">
-                  QUIERO ADOPTAR
-                </div>
-              </motion.div>
-            )}
+            <motion.div 
+              style={{ opacity: favOpacity }}
+              className="absolute inset-x-0 top-10 flex justify-center z-20 pointer-events-none"
+            >
+              <div className="bg-primary/90 text-white font-black text-4xl px-8 py-3 rounded-2xl rotate-12 shadow-xl border-4 border-white/20">
+                FAVORITO
+              </div>
+            </motion.div>
+            <motion.div 
+              style={{ opacity: passOpacity }}
+              className="absolute inset-x-0 top-10 flex justify-center z-20 pointer-events-none"
+            >
+              <div className="bg-marron/90 text-white font-black text-4xl px-8 py-3 rounded-2xl -rotate-12 shadow-xl border-4 border-white/20">
+                PASAR
+              </div>
+            </motion.div>
+            <motion.div 
+              style={{ opacity: adoptOpacity }}
+              className="absolute inset-x-0 top-10 flex justify-center z-20 pointer-events-none"
+            >
+              <div className="bg-marron/90 text-white font-black text-4xl px-8 py-3 rounded-2xl shadow-xl border-4 border-white/20">
+                QUIERO ADOPTAR
+              </div>
+            </motion.div>
           </motion.div>
         </AnimatePresence>
       </div>

@@ -11,6 +11,10 @@ interface PostularPageProps {
   };
 }
 
+export async function generateStaticParams() {
+  return mockPets.map((pet) => ({ id: pet.id }));
+}
+
 export default function PostularPage({ params }: PostularPageProps) {
   const pet = mockPets.find((p) => p.id === params.id);
 

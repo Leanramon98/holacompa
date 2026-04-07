@@ -32,6 +32,11 @@ interface PetPageProps {
   };
 }
 
+
+export async function generateStaticParams() {
+  return mockPets.map((pet) => ({ id: pet.id }));
+}
+
 export async function generateMetadata({ params }: PetPageProps): Promise<Metadata> {
   const pet = mockPets.find((p) => p.id === params.id);
   if (!pet) return { title: "Mascota no encontrada | Hola Compa" };

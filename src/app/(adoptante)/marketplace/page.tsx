@@ -15,7 +15,8 @@ import {
   Store,
   X,
   ArrowUpDown,
-  Flame
+  Flame,
+  Star
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
