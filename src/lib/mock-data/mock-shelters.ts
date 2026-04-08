@@ -17,6 +17,7 @@ export const mockShelters: Shelter[] = [
     verification_status: "approved",
     verified_at: "2024-01-15T10:00:00Z",
     premium_plan: true,
+    photos: ["https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2669&auto=format&fit=crop"],
   },
   {
     profile_id: "shelter-2",
@@ -28,6 +29,7 @@ export const mockShelters: Shelter[] = [
     verification_status: "approved",
     verified_at: "2024-02-20T14:30:00Z",
     premium_plan: false,
+    photos: ["https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2669&auto=format&fit=crop"],
   },
   {
     profile_id: "shelter-3",
@@ -37,6 +39,7 @@ export const mockShelters: Shelter[] = [
     verification_status: "approved",
     verified_at: "2024-03-05T09:15:00Z",
     premium_plan: false,
+    photos: ["https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2669&auto=format&fit=crop"],
   },
   {
     profile_id: "shelter-4",
@@ -46,6 +49,7 @@ export const mockShelters: Shelter[] = [
     verification_status: "approved",
     verified_at: "2024-03-25T17:45:00Z",
     premium_plan: false,
+    photos: ["https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2669&auto=format&fit=crop"],
   },
   {
     profile_id: "shelter-5",
@@ -54,5 +58,15 @@ export const mockShelters: Shelter[] = [
     description: "Refugio municipal con gestión externa de voluntarios. Trabajamos por el bienestar animal en Lanús.",
     verification_status: "pending",
     premium_plan: true,
+    photos: ["https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2669&auto=format&fit=crop"],
   }
 ];
+
+export const getShelters = async () => mockShelters;
+export const getShelterById = async (id: string) => mockShelters.find(s => s.profile_id === id);
+export const getShelterBySlug = async (slug: string) => {
+  // En este mock simple, convertimos el nombre a slug
+  return mockShelters.find(s => 
+    s.shelter_name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]/g, "") === slug
+  );
+};

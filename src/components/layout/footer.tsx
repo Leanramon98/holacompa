@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { PawPrint, Instagram, Twitter, MessageCircle, Heart, Store, Compass, LayoutGrid } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const footerLinks = {
   explorar: [
-    { label: "Mascotas", href: "/descubrir" },
+    { label: "Mascotas", href: "/explorar" },
     { label: "Refugios", href: "/refugios" },
     { label: "Marketplace", href: "/marketplace" },
     { label: "Cómo funciona", href: "/#como-funciona" },
@@ -22,10 +26,14 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const pathname = usePathname();
+  
+  // Ocultar footer en rutas administrativas
+  const isDashboard = pathname.startsWith("/refugio/") || pathname.startsWith("/vendedor/");
+  if (isDashboard) return null;
+
   return (
     <footer className="relative bg-on-surface text-background mt-40">
-      {/* Editorial Slogan Curve */}
-      <div className="absolute top-0 left-0 right-0 h-40 bg-background organic-clip -translate-y-full pointer-events-none" />
       
       <div className="container mx-auto px-6 py-24 md:py-32">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 md:gap-24">
@@ -85,7 +93,7 @@ export function Footer() {
                   className="w-full h-16 bg-white/5 border border-white/10 rounded-full px-6 text-white placeholder:text-white/20 focus:ring-2 focus:ring-primary focus:outline-none transition-all text-lg"
                 />
                 <button className="absolute right-2 top-2 h-12 w-12 rounded-full bg-primary flex items-center justify-center text-white hover:scale-105 active:scale-95 shadow-lg">
-                  <ArrowRight className="h-6 w-6" />
+                  <ArrowRightAlt className="h-6 w-6" />
                 </button>
               </div>
             </div>
@@ -110,7 +118,7 @@ export function Footer() {
   );
 }
 
-function ArrowRight(props: any) {
+function ArrowRightAlt(props: any) {
   return (
     <svg
       {...props}

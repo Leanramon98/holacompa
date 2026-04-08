@@ -62,7 +62,9 @@ export interface Shelter {
   verification_status: VerificationStatus;
   verification_documents?: any;
   verified_at?: string;
+  city?: string;
   premium_plan: boolean;
+  photos: string[];
 }
 
 /**

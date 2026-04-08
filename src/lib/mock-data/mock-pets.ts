@@ -400,3 +400,7 @@ export const mockPets: Pet[] = [
     updated_at: "2024-03-30T10:00:00Z",
   }
 ];
+
+export const getPets = async () => mockPets;
+export const getPetById = async (id: string) => mockPets.find(p => p.id === id);
+export const getPetsByShelterId = async (id: string) => mockPets.filter(p => p.shelter_id === id);

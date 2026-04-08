@@ -326,3 +326,7 @@ export const mockProducts: Product[] = [
     updated_at: "2024-04-01T10:00:00Z",
   }
 ];
+
+export const getProducts = async () => mockProducts;
+export const getProductById = async (id: string) => mockProducts.find(p => p.id === id);
+export const getProductsByVendorId = async (id: string) => mockProducts.filter(p => p.vendor_id === id);

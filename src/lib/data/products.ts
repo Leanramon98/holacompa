@@ -25,7 +25,7 @@ export async function getProducts(filters?: ProductFilters): Promise<Product[]> 
       result = result.filter(p => p.vendor_id === filters.vendor_id);
     }
     if (filters.pet_type) {
-      result = result.filter(p => p.pet_types.includes(filters.pet_type));
+      result = result.filter(p => p.pet_types.includes(filters.pet_type!));
     }
     if (filters.status) {
       result = result.filter(p => p.status === filters.status);
@@ -45,4 +45,9 @@ export async function getProductById(id: string): Promise<Product | null> {
   await delay(300);
   const product = mockProducts.find(p => p.id === id);
   return product || null;
+}
+
+export async function getProductsByVendorId(id: string): Promise<Product[]> {
+  await delay(300);
+  return mockProducts.filter(p => p.vendor_id === id);
 }

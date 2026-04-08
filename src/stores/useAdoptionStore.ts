@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { PetType, PetSize, EnergyLevel } from "@/types";
+import { Pet, PetType, PetSize, EnergyLevel } from "@/types";
 
 export interface AdoptionFilters {
   pet_type?: PetType | "todos";
@@ -36,6 +36,12 @@ interface AdoptionState {
   addToHistory: (petId: string) => void;
   popFromHistory: () => string | undefined;
 
+  // Feed de mascotas
+  pets: Pet[];
+  setPets: (pets: Pet[]) => void;
+  currentIndex: number;
+  setIndex: (index: number) => void;
+
   // Mascotas "descartadas" temporalmente en la sesión para el deck
   skippedPets: string[];
   addToSkipped: (petId: string) => void;
@@ -46,7 +52,7 @@ export const useAdoptionStore = create<AdoptionState>()(
   persist(
     (set, get) => ({
       viewMode: "deck",
-      setViewMode: (mode) => set({ viewMode: mode }),
+      setViewMode: (mode: "deck" | "grid") => set({ viewMode: mode }),
 
       filters: {
         pet_type: "todos",
@@ -57,8 +63,8 @@ export const useAdoptionStore = create<AdoptionState>()(
         characteristics: {},
         searchQuery: "",
       },
-      setFilters: (newFilters) => 
-        set((state) => ({ filters: { ...state.filters, ...newFilters } })),
+      setFilters: (newFilters: Partial<AdoptionFilters>) => 
+        set((state: AdoptionState) => ({ filters: { ...state.filters, ...newFilters } })),
       resetFilters: () => set({
         filters: {
           pet_type: "todos",
@@ -72,14 +78,14 @@ export const useAdoptionStore = create<AdoptionState>()(
       }),
 
       favorites: [],
-      toggleFavorite: (petId) => set((state) => ({
+      toggleFavorite: (petId: string) => set((state: AdoptionState) => ({
         favorites: state.favorites.includes(petId)
           ? state.favorites.filter((id) => id !== petId)
           : [...state.favorites, petId],
       })),
 
       seenHistory: [],
-      addToHistory: (petId) => set((state) => {
+      addToHistory: (petId: string) => set((state: AdoptionState) => {
         const newHistory = [...state.seenHistory, petId];
         // Mantener historial de máximo 10
         if (newHistory.length > 10) newHistory.shift();
@@ -93,8 +99,13 @@ export const useAdoptionStore = create<AdoptionState>()(
         return lastId;
       },
 
+      pets: [],
+      setPets: (pets: Pet[]) => set({ pets }),
+      currentIndex: 0,
+      setIndex: (currentIndex: number) => set({ currentIndex }),
+
       skippedPets: [],
-      addToSkipped: (petId) => set((state) => ({
+      addToSkipped: (petId: string) => set((state: AdoptionState) => ({
         skippedPets: [...state.skippedPets, petId]
       })),
       clearSessionData: () => set({ seenHistory: [], skippedPets: [] }),
@@ -102,10 +113,11 @@ export const useAdoptionStore = create<AdoptionState>()(
     {
       name: "holacompa-adoption-store",
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ 
+      partialize: (state: AdoptionState) => ({ 
         viewMode: state.viewMode, 
         favorites: state.favorites,
-        filters: state.filters 
+        filters: state.filters,
+        currentIndex: state.currentIndex
       }), // Solo persistimos lo importante a largo plazo
     }
   )

@@ -13,3 +13,10 @@ export async function getShelterById(id: string): Promise<Shelter | null> {
   const shelter = mockShelters.find(s => s.profile_id === id);
   return shelter || null;
 }
+
+export async function getShelterBySlug(slug: string): Promise<Shelter | null> {
+  await delay(200);
+  return mockShelters.find(s => 
+    s.shelter_name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]/g, "") === slug
+  ) || null;
+}

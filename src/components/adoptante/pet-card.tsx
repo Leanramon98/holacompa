@@ -45,20 +45,24 @@ export function PetCard({ pet, active }: PetCardProps) {
           <div className="space-y-2">
             <div className="flex items-baseline gap-3">
               <h1 className="font-plus-jakarta font-black text-5xl md:text-6xl tracking-tighter leading-none">{pet.name}</h1>
-              <span className="font-be-vietnam text-2xl font-medium opacity-80">{pet.age_numeric} {pet.age_numeric === 1 ? "año" : "años"}</span>
+              <span className="font-be-vietnam text-2xl font-medium opacity-80">
+                {Math.floor(pet.estimated_age_months / 12) > 0 
+                  ? `${Math.floor(pet.estimated_age_months / 12)} años` 
+                  : `${pet.estimated_age_months} meses`}
+              </span>
             </div>
             <div className="flex items-center gap-2 opacity-60">
               <MapPin className="h-4 w-4" />
-              <span className="text-sm font-black uppercase tracking-widest">{pet.location_name || "Buenos Aires, ARG"} • 1.5 km</span>
+              <span className="text-sm font-black uppercase tracking-widest">{pet.breed || "Mestizo"} • 1.5 km</span>
             </div>
           </div>
           
           <p className="font-be-vietnam text-lg leading-relaxed opacity-90 max-w-[90%] font-medium line-clamp-3">
-            {pet.description || "Soy un compañero ideal buscando un hogar para llenar de alegría y juegos infinitos."}
+            {pet.story || pet.personality || "Soy un compañero ideal buscando un hogar para llenar de alegría y juegos infinitos."}
           </p>
 
           <div className="flex flex-wrap gap-2 pt-2">
-            {pet.tags?.map(tag => (
+            {[pet.personality, pet.sex, pet.estimated_size].filter(Boolean).map(tag => (
               <span key={tag} className="px-4 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-black uppercase tracking-widest">
                 {tag}
               </span>

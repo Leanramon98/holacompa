@@ -1,11 +1,12 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { SwipeDeck } from "@/components/adoptante/swipe-deck";
 import { FilterSection } from "@/components/adoptante/filter-section";
 import { Search, Compass, Heart, Cat, Bird, Rabbit, Droplets, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAdoptionStore } from "@/stores/useAdoptionStore";
-import { useState } from "react";
+import { getPets } from "@/lib/data/pets";
 
 const mainCategories = [
   { id: "perro", label: "Perros", icon: <Compass className="h-5 w-5" /> },
@@ -16,8 +17,16 @@ const mainCategories = [
 ];
 
 export default function DescubrirPage() {
-  const { filters, setFilters } = useAdoptionStore();
+  const { filters, setFilters, setPets } = useAdoptionStore();
   const [activeTab, setActiveTab] = useState("all");
+
+  useEffect(() => {
+    const loadPets = async () => {
+      const allPets = await getPets();
+      setPets(allPets);
+    };
+    loadPets();
+  }, [setPets]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background font-be-vietnam pb-40">

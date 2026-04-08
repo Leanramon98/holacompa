@@ -99,3 +99,11 @@ export const mockVendors: Vendor[] = [
     commission_rate: 5,
   }
 ];
+
+export const getVendors = async () => mockVendors;
+export const getVendorById = async (id: string) => mockVendors.find(v => v.profile_id === id);
+export const getVendorBySlug = async (slug: string) => {
+  return mockVendors.find(v => 
+    v.business_name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]/g, "") === slug
+  );
+};
